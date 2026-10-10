@@ -1,0 +1,2327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Informatique - Réparation & Optimisation Windows</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-navy: #0a1628;
+            --dark-blue: #0d1f3c;
+            --primary-blue: #1a6dff;
+            --bright-blue: #2979ff;
+            --light-blue: #4da6ff;
+            --accent-cyan: #00d4ff;
+            --purple: #6c3ce0;
+            --purple-light: #8b5cf6;
+            --white: #ffffff;
+            --gray-light: #f0f4f8;
+            --gray: #94a3b8;
+            --text-dark: #1e293b;
+            --gradient-blue: linear-gradient(135deg, #1a6dff 0%, #00d4ff 100%);
+            --gradient-dark: linear-gradient(135deg, #0a1628 0%, #1a2d4a 100%);
+            --gradient-purple: linear-gradient(135deg, #6c3ce0 0%, #8b5cf6 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            background: var(--white);
+        }
+
+        /* ===== PRELOADER ===== */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .preloader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(26, 109, 255, 0.2);
+            border-top: 4px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== CURSOR ===== */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-blue);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 99998;
+            transition: transform 0.15s ease, background 0.15s ease;
+            mix-blend-mode: difference;
+        }
+
+        .custom-cursor.hover {
+            transform: scale(2);
+            background: rgba(26, 109, 255, 0.1);
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 20px 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 22, 40, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 12px 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .nav-logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--white);
+        }
+
+        .nav-logo-text span {
+            color: var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-blue);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover {
+            color: var(--white);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: var(--gradient-blue);
+            color: var(--white) !important;
+            padding: 12px 28px !important;
+            border-radius: 50px;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(26, 109, 255, 0.4);
+        }
+
+        .nav-cta::after {
+            display: none !important;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 109, 255, 0.5) !important;
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+
+        .nav-toggle span {
+            width: 28px;
+            height: 2.5px;
+            background: var(--white);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .nav-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .nav-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            min-height: 100vh;
+            background: var(--gradient-dark);
+            position: relative;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hero-bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(26, 109, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(26, 109, 255, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        .hero-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float-particle linear infinite;
+        }
+
+        @keyframes float-particle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+        }
+
+        .hero-glow-1 {
+            top: -200px;
+            right: -100px;
+            background: var(--primary-blue);
+        }
+
+        .hero-glow-2 {
+            bottom: -200px;
+            left: -100px;
+            background: var(--purple);
+        }
+
+        .hero-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
+
+        .hero-content {
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(26, 109, 255, 0.1);
+            border: 1px solid rgba(26, 109, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            animation: pulse-dot 2s ease infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+        }
+
+        .hero-badge span {
+            color: var(--accent-cyan);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-title .highlight {
+            background: var(--gradient-blue);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.7;
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--gradient-blue);
+            color: var(--white);
+            padding: 16px 36px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(26, 109, 255, 0.4);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(26, 109, 255, 0.5);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            color: var(--white);
+            padding: 16px 36px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-blue);
+            background: rgba(26, 109, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .hero-stat-number span {
+            color: var(--accent-cyan);
+        }
+
+        .hero-stat-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 4px;
+        }
+
+        .hero-visual {
+            position: relative;
+            animation: fadeInUp 1s ease 0.8s both;
+        }
+
+        .hero-pc-mockup {
+            position: relative;
+            width: 100%;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        .hero-monitor {
+            background: linear-gradient(145deg, #1a2d4a, #0d1f3c);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .hero-monitor-screen {
+            background: linear-gradient(135deg, #1a6dff 0%, #0066cc 50%, #004499 100%);
+            border-radius: 10px;
+            aspect-ratio: 16/10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-monitor-screen::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        }
+
+        .screen-content {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .screen-icon {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .screen-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .screen-subtext {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .hero-monitor-stand {
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(180deg, #1a2d4a, #0d1f3c);
+            margin: 0 auto;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+        }
+
+        .hero-monitor-base {
+            width: 160px;
+            height: 8px;
+            background: linear-gradient(180deg, #1a2d4a, #0d1f3c);
+            margin: 0 auto;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .floating-card-1 {
+            top: 20%;
+            right: -30px;
+            animation-delay: 0s;
+        }
+
+        .floating-card-2 {
+            bottom: 25%;
+            left: -40px;
+            animation-delay: 1s;
+        }
+
+        .floating-card-3 {
+            bottom: 10%;
+            right: -20px;
+            animation-delay: 2s;
+        }
+
+        .floating-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .floating-card-icon.blue { background: var(--gradient-blue); }
+        .floating-card-icon.purple { background: var(--gradient-purple); }
+        .floating-card-icon.cyan { background: linear-gradient(135deg, #00d4ff, #0099cc); }
+
+        .floating-card-text {
+            color: var(--white);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .floating-card-sub {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.7rem;
+        }
+
+        /* ===== SECTION COMMON ===== */
+        .section {
+            padding: 100px 0;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(26, 109, 255, 0.08);
+            color: var(--primary-blue);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .section-title .highlight {
+            background: var(--gradient-blue);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ===== SERVICES SECTION ===== */
+        .services {
+            background: var(--gray-light);
+            position: relative;
+        }
+
+        .services::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(26, 109, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(108, 60, 224, 0.03) 0%, transparent 50%);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .service-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 36px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-blue);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .service-icon.blue { background: var(--gradient-blue); }
+        .service-icon.purple { background: var(--gradient-purple); }
+        .service-icon.cyan { background: linear-gradient(135deg, #00d4ff, #0099cc); }
+        .service-icon.dark { background: linear-gradient(135deg, #1e293b, #334155); }
+        .service-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
+        .service-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .service-icon.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+        .service-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .service-card p {
+            color: var(--gray);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .service-card-arrow {
+            position: absolute;
+            bottom: 36px;
+            right: 36px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .service-card:hover .service-card-arrow {
+            background: var(--primary-blue);
+            color: var(--white);
+            transform: translateX(4px);
+        }
+
+        /* ===== ABOUT / WHY US SECTION ===== */
+        .why-us {
+            background: var(--white);
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .why-image {
+            position: relative;
+        }
+
+        .why-image-main {
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            background: var(--gradient-dark);
+            aspect-ratio: 4/3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .why-image-main .laptop-visual {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .laptop-visual i {
+            font-size: 5rem;
+            background: var(--gradient-blue);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .laptop-visual p {
+            color: rgba(255,255,255,0.7);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .why-image-badge {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 20px 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .why-image-badge-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .why-image-badge-text strong {
+            display: block;
+            font-size: 1.3rem;
+            color: var(--text-dark);
+        }
+
+        .why-image-badge-text span {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .why-content h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .why-content h2 .highlight {
+            background: var(--gradient-blue);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .why-content > p {
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 36px;
+            font-size: 1.05rem;
+        }
+
+        .why-features {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .why-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .why-feature-icon {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 12px;
+            background: rgba(26, 109, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            font-size: 1.1rem;
+        }
+
+        .why-feature h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .why-feature p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== PLATFORMS SECTION ===== */
+        .platforms {
+            background: var(--gradient-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .platforms::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(26, 109, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(26, 109, 255, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .platforms .section-title {
+            color: var(--white);
+        }
+
+        .platforms .section-desc {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .platforms .section-label {
+            background: rgba(26, 109, 255, 0.15);
+            color: var(--accent-cyan);
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .platform-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .platform-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(26, 109, 255, 0.3);
+            transform: translateY(-8px);
+        }
+
+        .platform-card-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .platform-card-icon.windows { color: #00a4ef; }
+        .platform-card-icon.linux { color: #fcc624; }
+        .platform-card-icon.apple { color: #ffffff; }
+        .platform-card-icon.office { color: #d83b01; }
+
+        .platform-card h3 {
+            color: var(--white);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .platform-card p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== PROCESS SECTION ===== */
+        .process {
+            background: var(--white);
+        }
+
+        .process-timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            position: relative;
+        }
+
+        .process-timeline::before {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 12.5%;
+            width: 75%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-cyan), var(--purple), var(--primary-blue));
+            border-radius: 3px;
+        }
+
+        .process-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .process-step-number {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--gradient-blue);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin: 0 auto 24px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 20px rgba(26, 109, 255, 0.3);
+        }
+
+        .process-step h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .process-step p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== TESTIMONIALS ===== */
+        .testimonials {
+            background: var(--gray-light);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 36px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+        }
+
+        .testimonial-stars {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .testimonial-stars i {
+            color: #f59e0b;
+            font-size: 0.9rem;
+        }
+
+        .testimonial-card blockquote {
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testimonial-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--gradient-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .testimonial-author-info strong {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .testimonial-author-info span {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            background: var(--gradient-dark);
+            position: relative;
+            overflow: hidden;
+            padding: 80px 0;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(26, 109, 255, 0.1) 0%, transparent 50%);
+        }
+
+        .cta-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-content h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 16px;
+        }
+
+        .cta-content h2 .highlight {
+            background: var(--gradient-blue);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-content p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-whatsapp {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #25d366;
+            color: var(--white);
+            padding: 16px 36px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #060e1a;
+            padding: 60px 0 0;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.7;
+            margin-top: 16px;
+            font-size: 0.95rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .footer-social a:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+            transform: translateY(-3px);
+        }
+
+        .footer h4 {
+            color: var(--white);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-cyan);
+            transform: translateX(4px);
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .footer-contact-item i {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(26, 109, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+        }
+
+        .footer-contact-item span {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .footer-contact-item a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-contact-item a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .footer-bottom {
+            padding: 24px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-bottom p {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.85rem;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-bottom-links a {
+            color: rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-bottom-links a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* ===== SCROLL TO TOP ===== */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--gradient-blue);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 20px rgba(26, 109, 255, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(26, 109, 255, 0.5);
+        }
+
+        /* ===== WHATSAPP FLOAT ===== */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #25d366;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            z-index: 999;
+            transition: all 0.3s ease;
+            animation: whatsapp-pulse 2s ease infinite;
+        }
+
+        @keyframes whatsapp-pulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); }
+            50% { box-shadow: 0 4px 30px rgba(37, 211, 102, 0.6), 0 0 0 10px rgba(37, 211, 102, 0.1); }
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+        }
+
+        /* ===== ANIMATIONS ON SCROLL ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-subtitle {
+                margin: 0 auto 40px;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .why-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .platforms-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .process-timeline {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .process-timeline::before {
+                display: none;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 360px;
+                height: 100vh;
+                background: var(--dark-navy);
+                flex-direction: column;
+                justify-content: center;
+                padding: 40px;
+                transition: right 0.4s ease;
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+            }
+
+            .nav-links.open {
+                right: 0;
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .hero-title {
+                font-size: 2.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .platforms-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .process-timeline {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .hero-container {
+                padding: 0 20px;
+            }
+
+            .cta-content h2 {
+                font-size: 2rem;
+            }
+
+            .custom-cursor {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 1.8rem;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 20px;
+                align-items: center;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-spinner"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="cursor"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <div class="nav-logo-icon">
+                    <i class="fas fa-screwdriver-wrench"></i>
+                </div>
+                <div class="nav-logo-text">Info<span>Service</span></div>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#accueil">Accueil</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#pourquoi">Pourquoi Nous</a></li>
+                <li><a href="#plateformes">Plateformes</a></li>
+                <li><a href="#processus">Processus</a></li>
+                <li><a href="#contact" class="nav-cta">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="accueil">
+        <div class="hero-bg-grid"></div>
+        <div class="hero-particles" id="particles"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <div class="hero-badge-dot"></div>
+                    <span>Service Informatique</span>
+                </div>
+                <h1 class="hero-title">
+                    Réparation &<br>
+                    <span class="highlight">Optimisation</span><br>
+                    Système Windows
+                </h1>
+                <p class="hero-subtitle">
+                    Des solutions complètes pour un ordinateur plus rapide, plus stable et plus performant. Votre PC entre de bonnes mains.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn-primary">
+                        <i class="fas fa-headset"></i>
+                        Nous Contacter
+                    </a>
+                    <a href="#services" class="btn-secondary">
+                        <i class="fas fa-arrow-right"></i>
+                        Nos Services
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div>
+                        <div class="hero-stat-number">500<span>+</span></div>
+                        <div class="hero-stat-label">PC Réparés</div>
+                    </div>
+                    <div>
+                        <div class="hero-stat-number">98<span>%</span></div>
+                        <div class="hero-stat-label">Clients Satisfaits</div>
+                    </div>
+                    <div>
+                        <div class="hero-stat-number">24<span>h</span></div>
+                        <div class="hero-stat-label">Support Réactif</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="hero-pc-mockup">
+                    <div class="hero-monitor">
+                        <div class="hero-monitor-screen">
+                            <div class="screen-content">
+                                <div class="screen-icon">
+                                    <i class="fas fa-circle-check"></i>
+                                </div>
+                                <div class="screen-text">Système optimisé</div>
+                                <div class="screen-subtext">et prêt !</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-monitor-stand"></div>
+                    <div class="hero-monitor-base"></div>
+
+                    <div class="floating-card floating-card-1">
+                        <div class="floating-card-icon blue">
+                            <i class="fas fa-shield-halved"></i>
+                        </div>
+                        <div>
+                            <div class="floating-card-text">Sécurisé</div>
+                            <div class="floating-card-sub">Données protégées</div>
+                        </div>
+                    </div>
+
+                    <div class="floating-card floating-card-2">
+                        <div class="floating-card-icon purple">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div>
+                            <div class="floating-card-text">Rapide</div>
+                            <div class="floating-card-sub">Performance max</div>
+                        </div>
+                    </div>
+
+                    <div class="floating-card floating-card-3">
+                        <div class="floating-card-icon cyan">
+                            <i class="fas fa-gauge-high"></i>
+                        </div>
+                        <div>
+                            <div class="floating-card-text">Optimisé</div>
+                            <div class="floating-card-sub">100% fonctionnel</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="section services" id="services">
+        <div class="container">
+            <div class="section-header reveal">
+                <div class="section-label">
+                    <i class="fas fa-cogs"></i>
+                    Nos Services
+                </div>
+                <h2 class="section-title">
+                    Solutions <span class="highlight">Complètes</span><br>Pour Votre PC
+                </h2>
+                <p class="section-desc">
+                    Un PC bien entretenu, c'est un travail sans limite. Découvrez nos services professionnels.
+                </p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card reveal">
+                    <div class="service-icon blue">
+                        <i class="fab fa-windows"></i>
+                    </div>
+                    <h3>Réparation Système Windows</h3>
+                    <p>Résolution des erreurs, virus, lenteurs, plantages et autres problèmes système. Diagnostic complet et réparation efficace.</p>
+                    <div class="service-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card reveal">
+                    <div class="service-icon dark">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <h3>Bypass Windows</h3>
+                    <p>Contourner les mots de passe et accès bloqués avec sécurité. Récupération d'accès professionnelle et fiable.</p>
+                    <div class="service-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card reveal">
+                    <div class="service-icon cyan">
+                        <i class="fas fa-compact-disc"></i>
+                    </div>
+                    <h3>Installation Système d'Exploitation</h3>
+                    <p>Windows, Linux, macOS et bien d'autres. Installation propre, configuration optimale et pilotes à jour.</p>
+                    <div class="service-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card reveal">
+                    <div class="service-icon purple">
+                        <i class="fas fa-gauge-high"></i>
+                    </div>
+                    <h3>Booste PC</h3>
+                    <p>Nettoyage, optimisation, réglages pour plus de vitesse et de performance. Votre PC comme neuf.</p>
+                    <div class="service-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card reveal">
+                    <div class="service-icon green">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Tous les Systèmes Informatiques</h3>
+                    <p>PC, Laptop, Serveur, Tablette, Téléphone. Expertise multi-plateformes pour tous vos appareils.</p>
+                    <div class="service-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card reveal">
+                    <div class="service-icon orange">
+                        <i class="fas fa-file-word"></i>
+                    </div>
+                    <h3>Installation de Tous les Office</h3>
+                    <p>Word, Excel, PowerPoint, Access, Outlook, OneNote, etc. Suite Microsoft 365 complète installée et configurée.</p>
+                    <div class="service-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <div class="service-card reveal">
+                    <div class="service-icon red">
+                        <i class="fas fa-screwdriver-wrench"></i>
+                    </div>
+                    <h3>Entretien PC</h3>
+                    <p>Nettoyage physique et logiciel, remplacement de composants, vérification générale. Maintenance préventive complète.</p>
+                    <div class="service-card-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Us Section -->
+    <section class="section why-us" id="pourquoi">
+        <div class="container">
+            <div class="why-grid">
+                <div class="why-image reveal-left">
+                    <div class="why-image-main">
+                        <div class="laptop-visual">
+                            <i class="fas fa-laptop-code"></i>
+                            <p>Votre satisfaction est<br>notre priorité</p>
+                        </div>
+                    </div>
+                    <div class="why-image-badge">
+                        <div class="why-image-badge-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="why-image-badge-text">
+                            <strong>5+ Ans</strong>
+                            <span>D'expérience</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="why-content reveal-right">
+                    <h2>
+                        Pourquoi Choisir<br>
+                        <span class="highlight">Notre Service ?</span>
+                    </h2>
+                    <p>
+                        Nous combinons expertise technique, rapidité d'intervention et prix abordables pour vous offrir le meilleur service informatique.
+                    </p>
+                    <div class="why-features">
+                        <div class="why-feature">
+                            <div class="why-feature-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h4>Service Rapide</h4>
+                                <p>Dans les meilleurs délais, nous intervenons rapidement pour minimiser votre temps d'arrêt.</p>
+                            </div>
+                        </div>
+                        <div class="why-feature">
+                            <div class="why-feature-icon">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h4>Travail Sécurisé</h4>
+                                <p>Vos données sont protégées. Nous garantissons la confidentialité et la sécurité de vos informations.</p>
+                            </div>
+                        </div>
+                        <div class="why-feature">
+                            <div class="why-feature-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div>
+                                <h4>Prix Abordable</h4>
+                                <p>Qualité au meilleur prix. Des tarifs transparents et compétitifs pour tous nos services.</p>
+                            </div>
+                        </div>
+                        <div class="why-feature">
+                            <div class="why-feature-icon">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <div>
+                                <h4>Support Continu</h4>
+                                <p>Assistance avant, pendant et après l'intervention. Nous restons disponibles pour vous.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platforms Section -->
+    <section class="section platforms" id="plateformes">
+        <div class="container">
+            <div class="section-header reveal">
+                <div class="section-label">
+                    <i class="fas fa-layer-group"></i>
+                    Plateformes
+                </div>
+                <h2 class="section-title">
+                    Compatibilité <span class="highlight">Multi-Plateformes</span>
+                </h2>
+                <p class="section-desc">
+                    Nous maîtrisons tous les systèmes d'exploitation et suites logicielles majeurs.
+                </p>
+            </div>
+
+            <div class="platforms-grid">
+                <div class="platform-card reveal">
+                    <i class="fab fa-windows platform-card-icon windows"></i>
+                    <h3>Windows</h3>
+                    <p>Windows 10, 11 et versions antérieures. Installation, réparation et optimisation.</p>
+                </div>
+                <div class="platform-card reveal">
+                    <i class="fab fa-linux platform-card-icon linux"></i>
+                    <h3>Linux</h3>
+                    <p>Ubuntu, Debian, Fedora et autres distributions. Configuration serveur et desktop.</p>
+                </div>
+                <div class="platform-card reveal">
+                    <i class="fab fa-apple platform-card-icon apple"></i>
+                    <h3>macOS</h3>
+                    <p>Installation et maintenance des systèmes Apple. Support complet macOS.</p>
+                </div>
+                <div class="platform-card reveal">
+                    <i class="fab fa-microsoft platform-card-icon office"></i>
+                    <h3>Microsoft 365</h3>
+                    <p>Word, Excel, PowerPoint, Outlook, OneNote. Suite complète installée et configurée.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="section process" id="processus">
+        <div class="container">
+            <div class="section-header reveal">
+                <div class="section-label">
+                    <i class="fas fa-route"></i>
+                    Notre Processus
+                </div>
+                <h2 class="section-title">
+                    Comment Nous <span class="highlight">Travaillons</span>
+                </h2>
+                <p class="section-desc">
+                    Un processus simple et efficace en 4 étapes pour résoudre vos problèmes informatiques.
+                </p>
+            </div>
+
+            <div class="process-timeline">
+                <div class="process-step reveal">
+                    <div class="process-step-number">01</div>
+                    <h3>Diagnostic</h3>
+                    <p>Analyse complète de votre système pour identifier tous les problèmes.</p>
+                </div>
+                <div class="process-step reveal">
+                    <div class="process-step-number">02</div>
+                    <h3>Devis</h3>
+                    <p>Proposition transparente avec détail des interventions et tarifs.</p>
+                </div>
+                <div class="process-step reveal">
+                    <div class="process-step-number">03</div>
+                    <h3>Intervention</h3>
+                    <p>Réparation et optimisation par nos techniciens qualifiés.</p>
+                </div>
+                <div class="process-step reveal">
+                    <div class="process-step-number">04</div>
+                    <h3>Livraison</h3>
+                    <p>Vérification finale et remise de votre PC optimisé et fonctionnel.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section testimonials" id="temoignages">
+        <div class="container">
+            <div class="section-header reveal">
+                <div class="section-label">
+                    <i class="fas fa-star"></i>
+                    Témoignages
+                </div>
+                <h2 class="section-title">
+                    Ce Que Disent <span class="highlight">Nos Clients</span>
+                </h2>
+                <p class="section-desc">
+                    La satisfaction de nos clients est notre plus grande fierté.
+                </p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card reveal">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <blockquote>
+                        "Mon PC était extrêmement lent et plein de virus. Après leur intervention, il fonctionne comme neuf. Service rapide et professionnel !"
+                    </blockquote>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">AK</div>
+                        <div class="testimonial-author-info">
+                            <strong>Amara K.</strong>
+                            <span>Entrepreneur</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card reveal">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <blockquote>
+                        "J'avais oublié mon mot de passe Windows et j'étais bloqué. Ils ont résolu le problème en moins d'une heure. Très compétent !"
+                    </blockquote>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">FM</div>
+                        <div class="testimonial-author-info">
+                            <strong>Fatima M.</strong>
+                            <span>Étudiante</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card reveal">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <blockquote>
+                        "Installation complète de Windows et Office pour mon bureau. Tout fonctionne parfaitement. Prix très raisonnable. Je recommande !"
+                    </blockquote>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">JD</div>
+                        <div class="testimonial-author-info">
+                            <strong>Jean D.</strong>
+                            <span>Chef d'entreprise</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <div class="cta-content reveal">
+                <h2>
+                    Votre PC a besoin d'<span class="highlight">aide ?</span>
+                </h2>
+                <p>
+                    Contactez-nous dès maintenant pour un diagnostic gratuit. Ordinateur fonctionnel, connectez-vous au futur !
+                </p>
+                <div class="cta-buttons">
+                    <a href="https://wa.me/22890804914" target="_blank" class="btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        +228 90 80 49 14
+                    </a>
+                    <a href="tel:+22890804914" class="btn-secondary">
+                        <i class="fas fa-phone"></i>
+                        Appeler Maintenant
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="nav-logo">
+                        <div class="nav-logo-icon">
+                            <i class="fas fa-screwdriver-wrench"></i>
+                        </div>
+                        <div class="nav-logo-text">Info<span>Service</span></div>
+                    </a>
+                    <p>
+                        Service informatique professionnel. Réparation, optimisation et maintenance de vos systèmes informatiques. Rapide, sécurisé et fiable.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://wa.me/22890804914" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="#services"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i> Réparation Windows</a></li>
+                        <li><a href="#services"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i> Bypass Windows</a></li>
+                        <li><a href="#services"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i> Installation OS</a></li>
+                        <li><a href="#services"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i> Booste PC</a></li>
+                        <li><a href="#services"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i> Entretien PC</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Navigation</h4>
+                    <ul class="footer-links">
+                        <li><a href="#accueil"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i> Accueil</a></li>
+                        <li><a href="#services"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i> Services</a></li>
+                        <li><a href="#pourquoi"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i> Pourquoi Nous</a></li>
+                        <li><a href="#plateformes"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i> Plateformes</a></li>
+                        <li><a href="#contact"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i> Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Contact</h4>
+                    <div class="footer-contact-item">
+                        <i class="fab fa-whatsapp"></i>
+                        <a href="https://wa.me/22890804914">+228 90 80 49 14</a>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone"></i>
+                        <a href="tel:+22890804914">+228 90 80 49 14</a>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Lun - Sam: 8h - 20h</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-location-dot"></i>
+                        <span>Togo, Lomé</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 InfoService. Tous droits réservés.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Dépannage</a>
+                    <a href="#">Installation</a>
+                    <a href="#">Optimisation</a>
+                    <a href="#">Maintenance</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top" id="scrollTop" aria-label="Retour en haut">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/22890804914" target="_blank" class="whatsapp-float" aria-label="WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        // Preloader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 800);
+        });
+
+        // Custom Cursor
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX - 10 + 'px';
+            cursor.style.top = e.clientY - 10 + 'px';
+        });
+
+        document.querySelectorAll('a, button, .service-card, .platform-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Navbar Scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile Nav Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        navToggle.addEventListener('click', () => {
+            navToggle.classList.toggle('active');
+            navLinks.classList.toggle('open');
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navToggle.classList.remove('active');
+                navLinks.classList.remove('open');
+            });
+        });
+
+        // Particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 10 + 8) + 's';
+            particle.style.animationDelay = Math.random() * 10 + 's';
+            particle.style.width = (Math.random() * 4 + 2) + 'px';
+            particle.style.height = particle.style.width;
+            if (Math.random() > 0.5) {
+                particle.style.background = 'var(--accent-cyan)';
+            }
+            particlesContainer.appendChild(particle);
+        }
+
+        // Scroll Reveal
+        const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('active');
+                    }, index * 100);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Scroll to Top
+        const scrollTopBtn = document.getElementById('scrollTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Counter Animation
+        const counters = document.querySelectorAll('.hero-stat-number');
+        let counterAnimated = false;
+
+        function animateCounters() {
+            if (counterAnimated) return;
+            counterAnimated = true;
+
+            counters.forEach(counter => {
+                const text = counter.textContent;
+                const match = text.match(/(\d+)/);
+                if (match) {
+                    const target = parseInt(match[1]);
+                    const suffix = text.replace(match[1], '');
+                    let current = 0;
+                    const increment = target / 60;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        counter.innerHTML = Math.floor(current) + suffix.replace('+', '<span>+</span>').replace('%', '<span>%</span>').replace('h', '<span>h</span>');
+                    }, 30);
+                }
+            });
+        }
+
+        setTimeout(animateCounters, 1500);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
